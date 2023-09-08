@@ -32,24 +32,24 @@ def get_birthdays_per_week(users):
         for day_offset in range(7):
             next_birthday = today + timedelta(days=day_offset)
 
-            if next_birthday.weekday() == 5:  # Якщо день тижня - субота
-                next_birthday += timedelta(days=2)  # Переносимо на понеділок наступного тижня
-            elif next_birthday.weekday() == 6:  # Якщо день тижня - неділя
-                next_birthday += timedelta(days=1)  # Переносимо на понеділок наступного тижня
-
+            if next_birthday.weekday() == 5: 
+    
+                next_birthday += timedelta(days=2)
+            elif next_birthday.weekday() == 6:  
+                next_birthday += timedelta(days=1)
             if days_until_birthday == day_offset:
-                if next_birthday > today:  # Перевірка, чи день народження в майбутньому
-                    if next_birthday.weekday() == 0:  # Якщо вихідний на понеділок
+                if next_birthday > today:
+                    if next_birthday.weekday() == 0: 
                         birthdays["Monday"].append(name)
-                    elif next_birthday.weekday() == 1:  # Якщо вихідний на вівторок
+                    elif next_birthday.weekday() == 1:  
                         birthdays["Tuesday"].append(name)
-                    elif next_birthday.weekday() == 2:  # Якщо вихідний на середу
+                    elif next_birthday.weekday() == 2: 
                         birthdays["Wednesday"].append(name)
-                    elif next_birthday.weekday() == 3:  # Якщо вихідний на четвер
+                    elif next_birthday.weekday() == 3: 
                         birthdays["Thursday"].append(name)
-                    elif next_birthday.weekday() == 4:  # Якщо вихідний на п'ятницю
+                    elif next_birthday.weekday() == 4:  
                         birthdays["Friday"].append(name)
-                    elif next_birthday.weekday() == 6:  # Якщо вихідний на неділю
+                    elif next_birthday.weekday() == 6:  
                         birthdays["Sunday"].append(name)
 
     all_birthday_passed = all(birthday < today for user in users)
