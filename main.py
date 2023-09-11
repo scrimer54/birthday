@@ -5,6 +5,7 @@ def get_birthdays_per_week(users):
         return {}
 
     today = date.today()
+    current_year = today.year
     current_weekday = today.weekday()
     days_until_next_monday = (7 - current_weekday) % 7
     next_monday = today + timedelta(days=days_until_next_monday)
@@ -15,49 +16,42 @@ def get_birthdays_per_week(users):
         "Wednesday": [],
         "Thursday": [],
         "Friday": [],
+        "Saturday": [],
         "Sunday": [],
     }
+
+    all_birthday_passed = True
 
     for user in users:
         name = user["name"]
         birthday = user["birthday"]
 
-        if birthday < today:
-            next_birthday = date(today.year + 1, birthday.month, birthday.day)
+        if birthday.year < current_year:
+            birthday_this_year = birthday.replace(year=current_year + 1)
+        elif birthday.year > current_year:
+            birthday_this_year = birthday.replace(year=current_year)
         else:
-            next_birthday = birthday
+            birthday_this_year = birthday
 
-        days_until_birthday = (next_birthday - today).days
+        if birthday_this_year > today:
+            all_birthday_passed = False
+
+        days_until_birthday = (birthday_this_year - today).days
 
         for day_offset in range(7):
             next_birthday = today + timedelta(days=day_offset)
 
-            if next_birthday.weekday() == 5:  # Якщо день тижня - субота
-                next_birthday += timedelta(days=2)  # Переносимо на понеділок наступного тижня
-            elif next_birthday.weekday() == 6:  # Якщо день тижня - неділя
-                next_birthday += timedelta(days=1)  # Переносимо на понеділок наступного тижня
+            if next_birthday.weekday() == 5: 
+                next_birthday += timedelta(days=2)  
+            elif next_birthday.weekday() == 6:  
+                next_birthday += timedelta(days=1)  
 
             if days_until_birthday == day_offset:
-                if next_birthday > today:  # Перевірка, чи день народження в майбутньому
-                    if next_birthday.weekday() == 0:  # Якщо вихідний на понеділок
-                        birthdays["Monday"].append(name)
-                    elif next_birthday.weekday() == 1:  # Якщо вихідний на вівторок
-                        birthdays["Tuesday"].append(name)
-                    elif next_birthday.weekday() == 2:  # Якщо вихідний на середу
-                        birthdays["Wednesday"].append(name)
-                    elif next_birthday.weekday() == 3:  # Якщо вихідний на четвер
-                        birthdays["Thursday"].append(name)
-                    elif next_birthday.weekday() == 4:  # Якщо вихідний на п'ятницю
-                        birthdays["Friday"].append(name)
-                    elif next_birthday.weekday() == 6:  # Якщо вихідний на неділю
-                        birthdays["Sunday"].append(name)
+                if next_birthday >= today:
+                    day_name = next_birthday.strftime("%A")
+                    birthdays[day_name].append(name)
 
-    all_birthday_passed = all(birthday < today for user in users)
-    all_weekend = all(date.weekday() in [5, 6] for date in [next_monday, next_monday + timedelta(days=1),
-                                                             next_monday + timedelta(days=2), next_monday + timedelta(days=3),
-                                                             next_monday + timedelta(days=4)])
-
-    if all_birthday_passed or all_weekend:
+    if all_birthday_passed:
         return {}
 
     return birthdays
@@ -65,16 +59,16 @@ def get_birthdays_per_week(users):
 
 if __name__ == "__main__":
     users = [
-        {"name": "Biba", "birthday": date(2023, 9, 13)},
+        {"name": "Biba", "birthday": date(2023, 1, 1)},
         {"name": "Boba", "birthday": date(2023, 9, 12)},
-        {"name": "Ivan", "birthday": date(2023, 9, 11)},
-        {"name": "Igor", "birthday": date(2023, 9, 9)},
-        {"name": "Vasil", "birthday": date(2023, 9, 10)},
+        {"name": "Ivan", "birthday": date(2023, 9, 17)},
+        {"name": "Igor", "birthday": date(2023, 9, 16)},
+        {"name": "Vasil", "birthday": date(2023, 9, 15)},
+        
     ]
 
     result = get_birthdays_per_week(users)
 
     for day_name, names in result.items():
-        print(f"{day_name}: {', '.join(names)}")
-
-
+        if names:
+            print(f"{day_name}: {', '.join(names)}")
