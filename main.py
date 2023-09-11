@@ -36,7 +36,7 @@ def get_birthdays_per_week(users):
         if birthday_this_year > today:
             all_birthday_passed = False
 
-        days_until_birthday = (birthday_this_year - today).days
+        days_until_birthday = (birthday_this_year - today).days % 365
 
         for day_offset in range(7):
             next_birthday = today + timedelta(days=day_offset)
@@ -54,7 +54,7 @@ def get_birthdays_per_week(users):
     if all_birthday_passed:
         return {}
 
-    return birthdays
+    return {day_name: names for day_name, names in birthdays.items() if names}
     
 
 if __name__ == "__main__":
